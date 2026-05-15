@@ -1,0 +1,25 @@
+[package]
+name = "mor-rust-code-gui-manager"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# UI Framework
+dioxus = { version = "0.5", features = ["desktop"] }
+
+# Native OS Dialogs (File picker for selecting project folders)
+rfd = "0.17"
+
+# Asynchronous Runtime (Required to decouple UI from file watching)
+tokio = { version = "1", features = ["full"] }
+
+# OS Filesystem Event Watcher
+notify = "6.1"
+
+# Abstract Syntax Tree Parsing (To safely read/inject Rust code)
+syn = { version = "2.0", features = ["full", "visit", "visit-mut"] }
+quote = "1.0"
+
+# Elegant Error Handling
+anyhow = "1.0"
+futures-util = "0.3.32"
