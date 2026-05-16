@@ -1,5 +1,6 @@
 [package]
 name = "mor-rust-code-gui-manager"
+description = "A Dioxus-powered Rust GUI for visualizing, inspecting, and safely automating Rust project structure."
 version = "0.1.0"
 edition = "2024"
 
@@ -7,7 +8,7 @@ edition = "2024"
 # UI Framework
 dioxus = { version = "0.5", features = ["desktop"] }
 
-# Direct desktop crate access for launch_cfg, Config, WindowBuilder, tao, and muda.
+# Direct desktop crate access for Config, WindowBuilder, tao, and muda.
 # This avoids version/re-export confusion through dioxus::desktop.
 dioxus-desktop = "0.5"
 
@@ -30,3 +31,20 @@ futures-util = "0.3.32"
 
 # Native clipboard access for editor context-menu paste
 arboard = "3.4"
+
+[package.metadata.deb]
+maintainer = "Moribund Murdoch <moribundmurdoch@gmail.com>"
+copyright = "2026, Moribund Murdoch"
+license-file = ["LICENSE", "0"]
+extended-description = """
+Mor Rust GUI Manager is a Dioxus-powered Rust desktop GUI for visualizing,
+inspecting, and safely automating Rust project structure with node-based file
+navigation, heatmap views, editor tooling, and project wiki lookup.
+"""
+depends = "libwebkit2gtk-4.1-0 | libwebkit2gtk-4.0-37, libgtk-3-0, libayatana-appindicator3-1 | libappindicator3-1, libwayland-client0, libxkbcommon0, libssl3 | libssl1.1"
+section = "devel"
+priority = "optional"
+assets = [
+    ["target/release/gui", "usr/bin/mor-rust-gui-manager", "755"],
+    ["assets/purple_ink.css", "usr/share/mor-rust-gui-manager/assets/purple_ink.css", "644"],
+]
