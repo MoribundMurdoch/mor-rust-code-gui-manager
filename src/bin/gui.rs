@@ -1,17 +1,16 @@
 #![allow(non_snake_case)]
+
 use dioxus::html::HasFileData;
 use dioxus::prelude::*;
 use futures_util::StreamExt;
 
 use mor_rust_code_gui_manager::app_state::{
-    ActiveWorkspacePath, AppMode, GraphDepth, GraphViewMode,
+    ActiveSidebarTab, ActiveWorkspacePath, AppMode, GraphDepth, GraphViewMode, SyncLogEntries,
 };
-use mor_rust_code_gui_manager::ui::controls::ControlPanel;
 use mor_rust_code_gui_manager::ui::graph::ModuleTree;
-use mor_rust_code_gui_manager::ui::mode_switch::ModeSwitch;
+use mor_rust_code_gui_manager::ui::sidebar::RuneLiteSidebar;
 
-#[derive(Clone, Debug)]
-pub struct SyncEvent(String);
+const PURPLE_INK_CSS: &str = include_str!("../../assets/purple_ink.css");
 
 fn main() {
     dioxus::launch(App);
@@ -20,19 +19,17 @@ fn main() {
 fn App() -> Element {
     let mut sync_logs = use_signal(|| {
         vec![
-            SyncEvent(String::from(
-                "[SYSTEM] Initializing Mor Rust Code GUI Manager...",
-            )),
-            SyncEvent(String::from("[SYSTEM] Applying Purple Ink aesthetics...")),
-            SyncEvent(String::from("[SYSTEM] Standing by for filesystem watcher.")),
+            String::from("[SYSTEM] Initializing Mor Rust Code GUI Manager..."),
+            String::from("[SYSTEM] Applying Purple Ink aesthetics..."),
+            String::from("[SYSTEM] Standing by for filesystem watcher."),
         ]
     });
 
     let mut active_path = use_signal(|| {
-    std::env::current_dir()
-        .map(|path| path.display().to_string())
-        .unwrap_or_else(|_| String::from("Awaiting filesystem initialization..."))
-});
+        std::env::current_dir()
+            .map(|path| path.display().to_string())
+            .unwrap_or_else(|_| String::from("Awaiting filesystem initialization..."))
+    });
 
     // Global safety switch state.
     // The app always boots in read-only Inspect Mode.
@@ -42,10 +39,14 @@ fn App() -> Element {
     let mut view_mode = use_signal(|| "Hierarchy".to_string());
     let mut depth = use_signal(|| 3i32);
 
+    // RuneLite-style sidebar tab state.
+    // Use ControlPanel while building so the sidebar opens visibly.
+    let active_sidebar_tab = use_signal(|| ActiveSidebarTab::ControlPanel);
+
     // Bind the coroutine to `logger` so controls and drop events can send UI log messages.
     let logger = use_coroutine(|mut rx: UnboundedReceiver<String>| async move {
         while let Some(event_msg) = rx.next().await {
-            sync_logs.write().push(SyncEvent(event_msg));
+            sync_logs.write().push(event_msg);
         }
     });
 
@@ -54,14 +55,14 @@ fn App() -> Element {
     use_context_provider(|| app_mode);
     use_context_provider(|| GraphViewMode(view_mode));
     use_context_provider(|| GraphDepth(depth));
-
-    const PURPLE_INK_CSS: &str = include_str!("../../assets/purple_ink.css");
+    use_context_provider(|| active_sidebar_tab);
+    use_context_provider(|| SyncLogEntries(sync_logs));
 
     rsx! {
         style { "{PURPLE_INK_CSS}" }
 
         div {
-            id: "mor-manager-layout",
+            class: "main-app-layout",
             prevent_default: "ondragover",
             ondragover: move |_| {},
 
@@ -84,34 +85,24 @@ fn App() -> Element {
                         let path_buf = std::path::PathBuf::from(&dropped_path);
 
                         if let Err(e) = mor_rust_code_gui_manager::watcher::spawn_watcher(
-    path_buf,
-    tx,
-    app_mode.read().clone(),
-) {
+                            path_buf,
+                            tx,
+                            app_mode.read().clone(),
+                        ) {
                             logger.send(format!("[FATAL] Watcher fault: {}", e));
                         }
                     }
                 }
             },
 
-            div { id: "left-panel",
-                h2 { "Architectural Controls" }
-
-                ModeSwitch {}
-
-                ControlPanel {}
-            }
-
-            div { id: "center-panel",
-                h2 { "Rust Module Visualization & Etymology" }
+            div {
+                class: "graph-view-area",
 
                 div {
                     class: "graph-toolbar",
-                    style: "display: flex; align-items: center; gap: 12px; padding: 8px 16px; background: #1e1e24; border-bottom: 1px solid #3c2a5d; margin-bottom: 4px;",
 
                     div {
                         class: "view-modes",
-                        style: "display: flex; background: #161619; padding: 3px; gap: 3px;",
 
                         button {
                             class: "mode-btn",
@@ -201,7 +192,6 @@ fn App() -> Element {
                     if *view_mode.read() == "Hierarchy" {
                         div {
                             class: "depth-control",
-                            style: "display: flex; align-items: center; gap: 8px; color: #a9a9b3; font-size: 13px;",
 
                             span { "Depth" }
 
@@ -215,7 +205,6 @@ fn App() -> Element {
                                         depth.set(val);
                                     }
                                 },
-                                style: "accent-color: #9d72ff; width: 140px;",
                             }
 
                             span {
@@ -231,7 +220,6 @@ fn App() -> Element {
                                     depth.set(999);
                                     logger.send(String::from("[VIEW] Hierarchy depth set to All"));
                                 },
-                                style: "font-size: 11px; padding: 2px 8px;",
                                 "All"
                             }
                         }
@@ -249,23 +237,17 @@ fn App() -> Element {
                                 }
                             ));
                         },
-                        style: "margin-left: auto; background: #3c2a5d; color: #e0e0e0; border: none; padding: 4px 12px; cursor: pointer;",
                         "Refresh View"
                     }
                 }
 
-                ModuleTree {}
-            }
-
-            div { id: "right-panel",
-                h2 { "FileSystem Sync Log" }
-
-                div { class: "log-window",
-                    for log in sync_logs.read().iter() {
-                        div { class: "log-entry", "{log.0}" }
-                    }
+                div {
+                    class: "graph-canvas-wrap",
+                    ModuleTree {}
                 }
             }
+
+            RuneLiteSidebar {}
         }
     }
 }

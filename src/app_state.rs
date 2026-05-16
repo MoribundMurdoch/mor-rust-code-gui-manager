@@ -47,6 +47,7 @@ pub enum ActiveSidebarTab {
     ControlPanel,
     QuestLog,
     Automations,
+    SyncLog,
 }
 
 #[derive(Clone, Copy)]
@@ -57,3 +58,6 @@ pub struct GraphViewMode(pub Signal<String>);
 
 #[derive(Clone, Copy)]
 pub struct GraphDepth(pub Signal<i32>);
+
+#[derive(Clone, Copy)]
+pub struct SyncLogEntries(pub Signal<Vec<String>>);

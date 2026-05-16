@@ -78,6 +78,7 @@ a {
 }
 /* assets/css/layout.css */
 
+/* Legacy three-panel layout support */
 #mor-manager-layout {
     display: flex;
     height: 100vh;
@@ -104,6 +105,7 @@ a {
     border-right: none;
 }
 
+/* RuneLite-style app shell */
 .main-app-layout {
     display: flex;
     width: 100vw;
@@ -112,14 +114,40 @@ a {
     background-color: var(--mor-bg-deep);
 }
 
+/* Left/main canvas area */
 .graph-view-area {
     flex: 1 1 auto;
     min-width: 0;
-    position: relative;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
     border-right: 1px solid var(--mor-border-dark);
+    background: var(--mor-bg-deep);
 }
 
+/* Main graph/canvas area fills all remaining height */
+.graph-canvas-wrap {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    background: #050506;
+}
+
+.graph-canvas-wrap .graph-container,
+.graph-canvas-wrap .node-file-manager-graph {
+    width: 100%;
+    height: 100%;
+    min-height: 0 !important;
+}
+
+.graph-canvas-wrap svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* Old/general log styling, still usable inside sidebar */
 .log-window {
     background: var(--mor-bg-deep);
     border: 1px solid var(--mor-border-mid);
@@ -130,8 +158,7 @@ a {
     font-size: 0.85em;
     color: var(--mor-text-muted);
     box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.45);
-}
-/* assets/css/controls.css */
+}/* assets/css/controls.css */
 
 .safety-switch {
     border: 1px solid var(--mor-border-mid);
@@ -198,6 +225,7 @@ a {
 /* assets/css/graph.css */
 
 .graph-toolbar {
+    flex: 0 0 auto;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -206,7 +234,7 @@ a {
         linear-gradient(180deg, #252129 0%, #17151a 100%);
     border-top: 1px solid var(--mor-border-mid);
     border-bottom: 1px solid var(--mor-border-dark);
-    margin-bottom: 4px;
+    margin-bottom: 0;
     box-shadow: var(--mor-shadow-heavy);
 }
 
@@ -726,4 +754,46 @@ a {
     background: var(--mor-bg-deep);
     padding: 0.85rem;
     box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.35);
+}
+.sync-log-sidebar-panel {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.runelite-log-window {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    background: #080809;
+    border: 1px solid var(--mor-border-mid);
+    padding: 0.65rem;
+    font-family: var(--mor-font-code);
+    font-size: 0.78rem;
+    line-height: 1.45;
+    color: var(--mor-text-muted);
+    box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.55);
+}
+
+.runelite-log-window .log-entry {
+    margin-bottom: 0.25rem;
+    white-space: pre-wrap;
+}
+.sidebar-note {
+    color: var(--mor-text-dim);
+    font-size: 0.82rem;
+    line-height: 1.4;
+    border-top: 1px solid var(--mor-border-mid);
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+}
+
+.runelite-panel ul {
+    margin: 0.5rem 0 0;
+    padding-left: 1.15rem;
+}
+
+.runelite-panel li {
+    margin-bottom: 0.4rem;
 }

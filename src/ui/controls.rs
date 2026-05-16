@@ -4,6 +4,7 @@ use dioxus::prelude::*;
 use tokio::sync::mpsc;
 
 use crate::app_state::AppMode;
+use crate::ui::mode_switch::ModeSwitch;
 use crate::watcher::spawn_watcher;
 
 fn spawn_log_bridge(logger: Coroutine<String>) -> mpsc::UnboundedSender<String> {
@@ -26,6 +27,8 @@ pub fn ControlPanel() -> Element {
 
     rsx! {
         div { class: "controls-container",
+            ModeSwitch {}
+
             div { class: "control-group",
                 h3 { "Workspace" }
 
@@ -43,7 +46,7 @@ pub fn ControlPanel() -> Element {
 
                             let app_mode = use_context::<Signal<AppMode>>();
 
-if let Err(e) = spawn_watcher(&folder_path, tx, app_mode.read().clone()) {
+                            if let Err(e) = spawn_watcher(&folder_path, tx, app_mode.read().clone()) {
                                 logger.send(format!("[FATAL] Watcher fault: {}", e));
                             }
                         }
