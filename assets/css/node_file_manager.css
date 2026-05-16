@@ -134,38 +134,71 @@
     pointer-events: none;
 }
 
+/* --- Node File Manager Context Menu --- */
+
 .nfm-context-menu {
-    position: absolute;
-    z-index: 1000;
-    min-width: 210px;
-    background: var(--mor-bg-deep);
+    position: fixed;
+    z-index: 10000;
+    min-width: 250px;
+    padding: 0.35rem;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent),
+        var(--mor-bg-deep);
     border: 1px solid var(--mor-border-bright);
-    box-shadow: var(--mor-shadow-heavy);
-    padding: 0.25rem;
+    box-shadow:
+        var(--mor-shadow-heavy),
+        var(--mor-shadow-glow);
+    font-family: var(--mor-font-ui);
+    color: var(--mor-text);
 }
 
 .nfm-context-title {
+    padding: 0.45rem 0.6rem;
+    margin: 0.15rem 0 0.25rem;
     color: var(--mor-accent-bright);
     font-family: var(--mor-font-code);
-    font-size: 0.85rem;
-    padding: 0.45rem 0.55rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
     border-bottom: 1px solid var(--mor-border-mid);
-    margin-bottom: 0.25rem;
 }
 
 .nfm-context-menu .context-menu-item {
     display: block;
     width: 100%;
-    text-align: left;
+    padding: 0.48rem 0.6rem;
     background: transparent;
-    border: none;
+    border: 1px solid transparent;
     color: var(--mor-text);
-    padding: 0.45rem 0.55rem;
+    text-align: left;
+    font-family: inherit;
     cursor: pointer;
 }
 
 .nfm-context-menu .context-menu-item:hover {
     background: #2b2016;
+    border-color: var(--mor-border-mid);
+    color: var(--mor-accent-bright);
+}
+
+.nfm-context-menu .context-menu-item:disabled,
+.nfm-context-menu .context-menu-item.disabled {
+    color: var(--mor-text-dim);
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.nfm-context-menu .context-menu-item:disabled:hover,
+.nfm-context-menu .context-menu-item.disabled:hover {
+    background: transparent;
+    border-color: transparent;
+    color: var(--mor-text-dim);
+}
+
+.nfm-context-separator {
+    height: 1px;
+    margin: 0.35rem 0;
+    background: var(--mor-border-mid);
+    opacity: 0.75;
 }
 
 .nfm-context-peek {
@@ -226,4 +259,98 @@
 
 .nfm-peek-code {
     color: var(--mor-text-muted);
+}
+
+/* --- Phase 5: File Creation Overlay --- */
+
+.nfm-creation-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(8, 8, 9, 0.86);
+}
+
+.nfm-creation-dialog {
+    width: min(400px, 90vw);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent),
+        var(--mor-bg-panel);
+    border: 1px solid var(--mor-border-bright);
+    box-shadow: var(--mor-shadow-heavy), var(--mor-shadow-glow);
+    color: var(--mor-text);
+}
+
+.nfm-creation-title {
+    color: var(--mor-accent-bright);
+    font-family: var(--mor-font-ui);
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.nfm-creation-path {
+    color: var(--mor-text-muted);
+    font-family: var(--mor-font-code);
+    font-size: 0.78rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.nfm-creation-input {
+    background: var(--mor-bg-deep);
+    border: 1px solid var(--mor-accent-purple);
+    color: var(--mor-text);
+    font-family: var(--mor-font-code);
+    padding: 0.5rem 0.65rem;
+    font-size: 1rem;
+    outline: none;
+}
+
+.nfm-creation-input:focus {
+    border-color: var(--mor-accent-bright);
+    box-shadow: 0 0 0 2px rgba(157, 114, 255, 0.24);
+}
+
+.nfm-creation-hint {
+    color: var(--mor-text-muted);
+    font-size: 0.78rem;
+    font-style: italic;
+    text-align: center;
+    margin-top: 0.25rem;
+}
+
+/* --- Phase 5.5: Deletion Utilities --- */
+
+.danger-text {
+    color: #f0d0d4 !important;
+}
+
+.nfm-context-menu .context-menu-item.danger-text {
+    color: #f0d0d4;
+}
+
+.nfm-context-menu .context-menu-item.danger-text:hover {
+    background: rgba(122, 51, 68, 0.28);
+    border-color: var(--mor-danger-border);
+    color: #f0d0d4;
+}
+
+.nfm-context-menu .context-menu-item.danger-text:disabled {
+    color: var(--mor-text-dim) !important;
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.nfm-danger-dialog {
+    border-color: var(--mor-danger-border);
+    box-shadow:
+        var(--mor-shadow-heavy),
+        0 0 18px rgba(122, 51, 68, 0.34);
 }

@@ -116,6 +116,7 @@ a {
 
 /* Left/main canvas area */
 .graph-view-area {
+    position: relative;
     flex: 1 1 auto;
     min-width: 0;
     height: 100vh;
@@ -128,6 +129,7 @@ a {
 
 /* Main graph/canvas area fills all remaining height */
 .graph-canvas-wrap {
+    position: relative;
     flex: 1 1 auto;
     min-height: 0;
     overflow: hidden;
@@ -224,18 +226,22 @@ a {
 }
 /* assets/css/graph.css */
 
+/* --- Graph toolbar shell -------------------------------------------------- */
+
 .graph-toolbar {
+    position: relative;
+    z-index: 200;
     flex: 0 0 auto;
     display: flex;
     align-items: center;
     gap: 12px;
     padding: 8px 16px;
-    background:
-        linear-gradient(180deg, #252129 0%, #17151a 100%);
+    background: linear-gradient(180deg, #252129 0%, #17151a 100%);
     border-top: 1px solid var(--mor-border-mid);
     border-bottom: 1px solid var(--mor-border-dark);
     margin-bottom: 0;
     box-shadow: var(--mor-shadow-heavy);
+    overflow: visible;
 }
 
 .graph-toolbar .view-modes {
@@ -244,9 +250,17 @@ a {
     border: 1px solid var(--mor-border-dark);
     padding: 3px;
     gap: 3px;
+    overflow: visible;
 }
 
+.graph-toolbar button {
+    font-family: inherit;
+}
+
+/* --- View mode buttons ---------------------------------------------------- */
+
 .graph-toolbar .mode-btn {
+    position: relative;
     background: transparent;
     color: var(--mor-text-muted);
     border: 1px solid transparent;
@@ -267,13 +281,83 @@ a {
     border-color: var(--mor-border-mid);
 }
 
-/* Keeps compatibility with the current inline active style in the Rust component. */
+/*
+   Preferred active state.
+
+   In gui.rs, prefer:
+   class: if *view_mode.read() == "Hierarchy" { "mode-btn active" } else { "mode-btn" }
+
+   The compatibility selector below still supports the old inline style while
+   you are moving the Rust over.
+*/
+.graph-toolbar .mode-btn.active,
 .graph-toolbar .mode-btn[style*="background: #9d72ff"] {
     background: #4b351c !important;
     color: var(--mor-accent-bright) !important;
     border-color: var(--mor-accent) !important;
     box-shadow: var(--mor-shadow-glow);
 }
+
+/* --- Custom toolbar tooltips --------------------------------------------- */
+
+.graph-toolbar button[data-tooltip] {
+    position: relative;
+}
+
+.graph-toolbar button[data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 50%;
+    top: calc(100% + 9px);
+    z-index: 99999;
+    width: max-content;
+    max-width: 260px;
+    transform: translateX(-50%) translateY(-4px);
+    padding: 7px 10px;
+    background: var(--mor-bg-deep);
+    color: var(--mor-text);
+    border: 1px solid var(--mor-border-bright);
+    box-shadow: var(--mor-shadow-heavy);
+    font-size: 12px;
+    line-height: 1.35;
+    text-align: center;
+    white-space: normal;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+        opacity 0.12s ease,
+        transform 0.12s ease;
+}
+
+.graph-toolbar button[data-tooltip]::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: calc(100% + 4px);
+    z-index: 99999;
+    width: 8px;
+    height: 8px;
+    background: var(--mor-bg-deep);
+    border-left: 1px solid var(--mor-border-bright);
+    border-top: 1px solid var(--mor-border-bright);
+    transform: translateX(-50%) rotate(45deg);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.12s ease;
+}
+
+.graph-toolbar button[data-tooltip]:hover::after,
+.graph-toolbar button[data-tooltip]:focus-visible::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.graph-toolbar button[data-tooltip]:hover::before,
+.graph-toolbar button[data-tooltip]:focus-visible::before {
+    opacity: 1;
+}
+
+/* --- Hierarchy depth controls -------------------------------------------- */
 
 .graph-toolbar .depth-control {
     display: flex;
@@ -288,9 +372,7 @@ a {
     width: 140px;
 }
 
-.graph-toolbar button {
-    font-family: inherit;
-}
+/* --- Non-mode toolbar buttons -------------------------------------------- */
 
 .graph-toolbar button:not(.mode-btn) {
     background: #1a1513;
@@ -305,7 +387,11 @@ a {
     border-color: var(--mor-border-bright);
 }
 
+/* --- Node context menu ---------------------------------------------------- */
+
 .node-context-menu {
+    position: fixed;
+    z-index: 21000;
     min-width: 190px;
     padding: 4px;
     background: var(--mor-bg-deep);
@@ -342,7 +428,21 @@ a {
     color: var(--mor-text-dim);
     cursor: not-allowed;
 }
-/* assets/css/node_file_manager.css */
+
+/* --- General graph tooltip / overlay safety ------------------------------ */
+
+.nfm-context-peek,
+.nfm-tooltip,
+.node-tooltip,
+.graph-tooltip {
+    position: fixed;
+    z-index: 20000;
+    pointer-events: none;
+}
+
+.nfm-context-menu {
+    z-index: 21000;
+}/* assets/css/node_file_manager.css */
 
 .node-file-manager-graph {
     position: relative;
@@ -478,38 +578,71 @@ a {
     pointer-events: none;
 }
 
+/* --- Node File Manager Context Menu --- */
+
 .nfm-context-menu {
-    position: absolute;
-    z-index: 1000;
-    min-width: 210px;
-    background: var(--mor-bg-deep);
+    position: fixed;
+    z-index: 10000;
+    min-width: 250px;
+    padding: 0.35rem;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent),
+        var(--mor-bg-deep);
     border: 1px solid var(--mor-border-bright);
-    box-shadow: var(--mor-shadow-heavy);
-    padding: 0.25rem;
+    box-shadow:
+        var(--mor-shadow-heavy),
+        var(--mor-shadow-glow);
+    font-family: var(--mor-font-ui);
+    color: var(--mor-text);
 }
 
 .nfm-context-title {
+    padding: 0.45rem 0.6rem;
+    margin: 0.15rem 0 0.25rem;
     color: var(--mor-accent-bright);
     font-family: var(--mor-font-code);
-    font-size: 0.85rem;
-    padding: 0.45rem 0.55rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
     border-bottom: 1px solid var(--mor-border-mid);
-    margin-bottom: 0.25rem;
 }
 
 .nfm-context-menu .context-menu-item {
     display: block;
     width: 100%;
-    text-align: left;
+    padding: 0.48rem 0.6rem;
     background: transparent;
-    border: none;
+    border: 1px solid transparent;
     color: var(--mor-text);
-    padding: 0.45rem 0.55rem;
+    text-align: left;
+    font-family: inherit;
     cursor: pointer;
 }
 
 .nfm-context-menu .context-menu-item:hover {
     background: #2b2016;
+    border-color: var(--mor-border-mid);
+    color: var(--mor-accent-bright);
+}
+
+.nfm-context-menu .context-menu-item:disabled,
+.nfm-context-menu .context-menu-item.disabled {
+    color: var(--mor-text-dim);
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.nfm-context-menu .context-menu-item:disabled:hover,
+.nfm-context-menu .context-menu-item.disabled:hover {
+    background: transparent;
+    border-color: transparent;
+    color: var(--mor-text-dim);
+}
+
+.nfm-context-separator {
+    height: 1px;
+    margin: 0.35rem 0;
+    background: var(--mor-border-mid);
+    opacity: 0.75;
 }
 
 .nfm-context-peek {
@@ -571,7 +704,100 @@ a {
 .nfm-peek-code {
     color: var(--mor-text-muted);
 }
-/* assets/css/automation.css */
+
+/* --- Phase 5: File Creation Overlay --- */
+
+.nfm-creation-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(8, 8, 9, 0.86);
+}
+
+.nfm-creation-dialog {
+    width: min(400px, 90vw);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent),
+        var(--mor-bg-panel);
+    border: 1px solid var(--mor-border-bright);
+    box-shadow: var(--mor-shadow-heavy), var(--mor-shadow-glow);
+    color: var(--mor-text);
+}
+
+.nfm-creation-title {
+    color: var(--mor-accent-bright);
+    font-family: var(--mor-font-ui);
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.nfm-creation-path {
+    color: var(--mor-text-muted);
+    font-family: var(--mor-font-code);
+    font-size: 0.78rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.nfm-creation-input {
+    background: var(--mor-bg-deep);
+    border: 1px solid var(--mor-accent-purple);
+    color: var(--mor-text);
+    font-family: var(--mor-font-code);
+    padding: 0.5rem 0.65rem;
+    font-size: 1rem;
+    outline: none;
+}
+
+.nfm-creation-input:focus {
+    border-color: var(--mor-accent-bright);
+    box-shadow: 0 0 0 2px rgba(157, 114, 255, 0.24);
+}
+
+.nfm-creation-hint {
+    color: var(--mor-text-muted);
+    font-size: 0.78rem;
+    font-style: italic;
+    text-align: center;
+    margin-top: 0.25rem;
+}
+
+/* --- Phase 5.5: Deletion Utilities --- */
+
+.danger-text {
+    color: #f0d0d4 !important;
+}
+
+.nfm-context-menu .context-menu-item.danger-text {
+    color: #f0d0d4;
+}
+
+.nfm-context-menu .context-menu-item.danger-text:hover {
+    background: rgba(122, 51, 68, 0.28);
+    border-color: var(--mor-danger-border);
+    color: #f0d0d4;
+}
+
+.nfm-context-menu .context-menu-item.danger-text:disabled {
+    color: var(--mor-text-dim) !important;
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.nfm-danger-dialog {
+    border-color: var(--mor-danger-border);
+    box-shadow:
+        var(--mor-shadow-heavy),
+        0 0 18px rgba(122, 51, 68, 0.34);
+}/* assets/css/automation.css */
 
 .automation-dialog-backdrop {
     position: fixed;
@@ -665,7 +891,119 @@ a {
     font-family: var(--mor-font-code);
     font-size: 0.85em;
 }
-/* assets/css/runelite_sidebar.css */
+/* --- Phase 6: Embedded Editor --- */
+.embedded-editor-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    background-color: #0d0d0f;
+}
+
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px;
+    background-color: #161619;
+    border-bottom: 2px solid #2a2040;
+}
+
+.editor-title {
+    color: #d1b8ff;
+    font-family: 'Georgia', serif;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.editor-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.editor-textarea {
+    flex-grow: 1;
+    width: 100%;
+    background-color: #0d0d0f;
+    color: #e0e0e0;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 24px;
+    border: none;
+    outline: none;
+    resize: none;
+}
+
+.editor-textarea:disabled {
+    color: #7a6b99;
+    background-color: #101012;
+    cursor: not-allowed;
+}
+/* --- Phase 6.5: CodeMirror Purple Ink Theme --- */
+.cm-s-purple-ink.CodeMirror {
+    background-color: var(--mor-bg-deep);
+    color: var(--mor-text);
+    font-family: var(--mor-font-code);
+    font-size: 14px;
+    height: 100%;
+}
+
+.cm-s-purple-ink .CodeMirror-gutters {
+    background-color: var(--mor-bg-panel);
+    border-right: 1px solid var(--mor-border-dark);
+    color: var(--mor-text-dim);
+}
+
+.cm-s-purple-ink .CodeMirror-cursor {
+    border-left: 2px solid var(--mor-accent-bright);
+}
+
+.cm-s-purple-ink .CodeMirror-selected {
+    background-color: rgba(183, 138, 58, 0.18); /* Matches your shadow-glow */
+}
+
+/* Syntax Highlighting Colors */
+.cm-s-purple-ink .cm-keyword { color: var(--mor-accent-bright); font-weight: bold; }
+.cm-s-purple-ink .cm-def { color: var(--mor-accent-purple); }
+.cm-s-purple-ink .cm-variable { color: var(--mor-text); }
+.cm-s-purple-ink .cm-variable-2 { color: var(--mor-text-muted); }
+.cm-s-purple-ink .cm-string { color: #d1b8ff; } 
+.cm-s-purple-ink .cm-number { color: #b8ffd1; }
+.cm-s-purple-ink .cm-comment { color: var(--mor-text-dim); font-style: italic; }
+.cm-s-purple-ink .cm-operator { color: var(--mor-accent); }
+
+/* --- Phase 6.5: CodeMirror Autocomplete Dropdown --- */
+.CodeMirror-hints {
+    position: absolute;
+    z-index: 9999;
+    overflow: hidden;
+    list-style: none;
+    margin: 0;
+    padding: 2px;
+    background-color: var(--mor-bg-panel);
+    border: 1px solid var(--mor-border-bright);
+    box-shadow: var(--mor-shadow-heavy);
+    font-family: var(--mor-font-code);
+    font-size: 13px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.CodeMirror-hint {
+    margin: 0;
+    padding: 4px 8px;
+    border-radius: 2px;
+    white-space: pre;
+    color: var(--mor-text-muted);
+    cursor: pointer;
+}
+
+.CodeMirror-hint-active {
+    background-color: var(--mor-bg-deep);
+    color: var(--mor-accent-bright);
+    border-left: 2px solid var(--mor-accent);
+}/* assets/css/runelite_sidebar.css */
 
 .runelite-sidebar-wrapper {
     display: flex;
@@ -796,4 +1134,227 @@ a {
 
 .runelite-panel li {
     margin-bottom: 0.4rem;
+}
+/* --- Plugin Hub Styling --- */
+.plugin-hub-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.runelite-plugin-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--mor-bg-deep);
+    border: 1px solid var(--mor-border-mid);
+    padding: 10px;
+}
+
+.runelite-plugin-item:hover {
+    border-color: var(--mor-border-bright);
+}
+
+.plugin-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-width: 75%;
+}
+
+.plugin-title {
+    color: var(--mor-text);
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.plugin-desc {
+    color: var(--mor-text-dim);
+    font-size: 11px;
+    line-height: 1.3;
+}
+
+.plugin-toggle {
+    background-color: #1a1513;
+    color: var(--mor-text-dim);
+    border: 1px solid var(--mor-border-mid);
+    padding: 6px 12px;
+    cursor: pointer;
+    font-family: var(--mor-font-code);
+    font-weight: bold;
+    border-radius: 2px;
+}
+
+.plugin-toggle.active {
+    background-color: #4b351c;
+    color: var(--mor-accent-bright);
+    border-color: var(--mor-accent);
+}/* assets/css/plugins.css */
+
+.osrs-plugin-window {
+    position: absolute;
+    width: 700px;
+    height: 600px; /* Much taller for chunk replacement */
+    background-color: var(--mor-bg-deep);
+    border: 2px solid var(--mor-border-mid);
+    display: flex;
+    flex-direction: column;
+    box-shadow: 12px 12px 32px rgba(0, 0, 0, 0.75);
+    z-index: 9999; /* Forces it over the Code Editor */
+}
+
+.osrs-plugin-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    gap: 8px;
+    background: linear-gradient(180deg, #151319 0%, #0d0d0f 100%);
+}
+
+.chunk-textarea {
+    flex-grow: 1; /* Forces text areas to split the massive height equally */
+    min-height: 200px;
+    background-color: #050506;
+    color: var(--mor-text);
+    border: 1px solid var(--mor-border-dark);
+    font-family: var(--mor-font-code);
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 12px;
+    resize: none;
+    outline: none;
+}
+
+.chunk-textarea:focus {
+    border-color: var(--mor-accent-purple);
+    box-shadow: inset 0 0 8px rgba(157, 114, 255, 0.1);
+}
+
+.osrs-plugin-tabs {
+    display: flex;
+    height: 36px;
+    background-color: #121014;
+    border-top: 2px solid var(--mor-border-mid);
+}
+
+.osrs-plugin-tab {
+    flex: 1;
+    background: transparent;
+    color: var(--mor-text-muted);
+    border: none;
+    border-right: 2px solid var(--mor-border-mid);
+    font-family: var(--mor-font-ui);
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.osrs-plugin-tab:hover {
+    color: var(--mor-accent-bright);
+    background-color: #1a161d;
+}
+
+.osrs-plugin-tab.active {
+    color: #f0d0d4; 
+}
+/* --- Phase 8: Blueprint Editor --- */
+.blueprint-workspace {
+    position: absolute;
+    inset: 0;
+    z-index: 9500; /* Just below the drag-menus */
+    background-color: #1a1c23;
+    background-image: radial-gradient(#3a3f4e 1px, transparent 0);
+    background-size: 24px 24px;
+    overflow: hidden;
+    user-select: none;
+}
+
+.bp-node {
+    position: absolute;
+    width: 220px;
+    background: #14151a;
+    border-radius: 6px;
+    border: 1px solid #3a3f4e;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05) inset;
+    display: flex;
+    flex-direction: column;
+    filter: drop-shadow(0 0 8px rgba(100, 150, 255, 0.15));
+}
+
+.bp-header {
+    padding: 8px 12px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    font-family: var(--mor-font-ui);
+    font-weight: bold;
+    font-size: 14px;
+    color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: grab;
+}
+
+.bp-header:active { cursor: grabbing; }
+
+/* Color coding based on your screenshot */
+.bp-header.struct {
+    background: linear-gradient(180deg, #005a9e 0%, #00447a 100%);
+    border-bottom: 2px solid #002b4d;
+}
+
+.bp-header.enum {
+    background: linear-gradient(180deg, #107c10 0%, #0b5a0b 100%);
+    border-bottom: 2px solid #053305;
+}
+
+.bp-body {
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.bp-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--mor-font-code);
+    font-size: 12px;
+    color: #d1d5db;
+}
+
+.bp-pin {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #9ca3af;
+    border: 2px solid #14151a;
+    cursor: crosshair;
+}
+
+.bp-pin:hover {
+    background: #ffffff;
+    transform: scale(1.2);
+}
+
+.bp-pin.execution {
+    border-radius: 2px; /* Triangle/square shape for execution flow */
+    background: #ffffff;
+}
+
+.bp-svg-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.bp-spline {
+    fill: none;
+    stroke: #60a5fa;
+    stroke-width: 3;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 4px rgba(96, 165, 250, 0.5));
 }

@@ -1,0 +1,169 @@
+/* assets/css/plugins.css */
+
+.osrs-plugin-window {
+    position: absolute;
+    width: 700px;
+    height: 600px; /* Much taller for chunk replacement */
+    background-color: var(--mor-bg-deep);
+    border: 2px solid var(--mor-border-mid);
+    display: flex;
+    flex-direction: column;
+    box-shadow: 12px 12px 32px rgba(0, 0, 0, 0.75);
+    z-index: 9999; /* Forces it over the Code Editor */
+}
+
+.osrs-plugin-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    gap: 8px;
+    background: linear-gradient(180deg, #151319 0%, #0d0d0f 100%);
+}
+
+.chunk-textarea {
+    flex-grow: 1; /* Forces text areas to split the massive height equally */
+    min-height: 200px;
+    background-color: #050506;
+    color: var(--mor-text);
+    border: 1px solid var(--mor-border-dark);
+    font-family: var(--mor-font-code);
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 12px;
+    resize: none;
+    outline: none;
+}
+
+.chunk-textarea:focus {
+    border-color: var(--mor-accent-purple);
+    box-shadow: inset 0 0 8px rgba(157, 114, 255, 0.1);
+}
+
+.osrs-plugin-tabs {
+    display: flex;
+    height: 36px;
+    background-color: #121014;
+    border-top: 2px solid var(--mor-border-mid);
+}
+
+.osrs-plugin-tab {
+    flex: 1;
+    background: transparent;
+    color: var(--mor-text-muted);
+    border: none;
+    border-right: 2px solid var(--mor-border-mid);
+    font-family: var(--mor-font-ui);
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.osrs-plugin-tab:hover {
+    color: var(--mor-accent-bright);
+    background-color: #1a161d;
+}
+
+.osrs-plugin-tab.active {
+    color: #f0d0d4; 
+}
+/* --- Phase 8: Blueprint Editor --- */
+.blueprint-workspace {
+    position: absolute;
+    inset: 0;
+    z-index: 9500; /* Just below the drag-menus */
+    background-color: #1a1c23;
+    background-image: radial-gradient(#3a3f4e 1px, transparent 0);
+    background-size: 24px 24px;
+    overflow: hidden;
+    user-select: none;
+}
+
+.bp-node {
+    position: absolute;
+    width: 220px;
+    background: #14151a;
+    border-radius: 6px;
+    border: 1px solid #3a3f4e;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05) inset;
+    display: flex;
+    flex-direction: column;
+    filter: drop-shadow(0 0 8px rgba(100, 150, 255, 0.15));
+}
+
+.bp-header {
+    padding: 8px 12px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    font-family: var(--mor-font-ui);
+    font-weight: bold;
+    font-size: 14px;
+    color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: grab;
+}
+
+.bp-header:active { cursor: grabbing; }
+
+/* Color coding based on your screenshot */
+.bp-header.struct {
+    background: linear-gradient(180deg, #005a9e 0%, #00447a 100%);
+    border-bottom: 2px solid #002b4d;
+}
+
+.bp-header.enum {
+    background: linear-gradient(180deg, #107c10 0%, #0b5a0b 100%);
+    border-bottom: 2px solid #053305;
+}
+
+.bp-body {
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.bp-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--mor-font-code);
+    font-size: 12px;
+    color: #d1d5db;
+}
+
+.bp-pin {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #9ca3af;
+    border: 2px solid #14151a;
+    cursor: crosshair;
+}
+
+.bp-pin:hover {
+    background: #ffffff;
+    transform: scale(1.2);
+}
+
+.bp-pin.execution {
+    border-radius: 2px; /* Triangle/square shape for execution flow */
+    background: #ffffff;
+}
+
+.bp-svg-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.bp-spline {
+    fill: none;
+    stroke: #60a5fa;
+    stroke-width: 3;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 4px rgba(96, 165, 250, 0.5));
+}

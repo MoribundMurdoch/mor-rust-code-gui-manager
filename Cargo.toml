@@ -7,6 +7,10 @@ edition = "2024"
 # UI Framework
 dioxus = { version = "0.5", features = ["desktop"] }
 
+# Direct desktop crate access for launch_cfg, Config, WindowBuilder, tao, and muda.
+# This avoids version/re-export confusion through dioxus::desktop.
+dioxus-desktop = "0.5"
+
 # Native OS Dialogs (File picker for selecting project folders)
 rfd = "0.17"
 
@@ -23,3 +27,6 @@ quote = "1.0"
 # Elegant Error Handling
 anyhow = "1.0"
 futures-util = "0.3.32"
+
+# Native clipboard access for editor context-menu paste
+arboard = "3.4"

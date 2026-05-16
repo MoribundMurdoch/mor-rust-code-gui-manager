@@ -47,8 +47,9 @@ pub fn spawn_watcher(
         for res in notify_rx {
             match res {
                 Ok(Event { kind, paths, .. }) => {
+                    // --- PHASE 5 & CORE: File Creation Logic ---
                     if kind.is_create() {
-                        for p in paths {
+                        for p in &paths {
                             if p.extension().map_or(false, |ext| ext == "rs") {
                                 let _ = tx.send(format!("[DETECTED] New Rust file: {}", p.display()));
 
@@ -75,6 +76,15 @@ pub fn spawn_watcher(
                                         }
                                     }
                                 }
+                            }
+                        }
+                    } 
+                    // --- PHASE 3: Quest Log Sync Logic ---
+                    else if kind.is_modify() {
+                        for p in paths {
+                            if p.file_name().map_or(false, |name| name == "MOR_PLAN.md") {
+                                // Send a specific trigger string to the main app loop
+                                let _ = tx.send(String::from("[SYNC_TOC]"));
                             }
                         }
                     }

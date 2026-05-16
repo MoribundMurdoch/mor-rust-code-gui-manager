@@ -130,3 +130,58 @@
 .runelite-panel li {
     margin-bottom: 0.4rem;
 }
+/* --- Plugin Hub Styling --- */
+.plugin-hub-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.runelite-plugin-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--mor-bg-deep);
+    border: 1px solid var(--mor-border-mid);
+    padding: 10px;
+}
+
+.runelite-plugin-item:hover {
+    border-color: var(--mor-border-bright);
+}
+
+.plugin-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-width: 75%;
+}
+
+.plugin-title {
+    color: var(--mor-text);
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.plugin-desc {
+    color: var(--mor-text-dim);
+    font-size: 11px;
+    line-height: 1.3;
+}
+
+.plugin-toggle {
+    background-color: #1a1513;
+    color: var(--mor-text-dim);
+    border: 1px solid var(--mor-border-mid);
+    padding: 6px 12px;
+    cursor: pointer;
+    font-family: var(--mor-font-code);
+    font-weight: bold;
+    border-radius: 2px;
+}
+
+.plugin-toggle.active {
+    background-color: #4b351c;
+    color: var(--mor-accent-bright);
+    border-color: var(--mor-accent);
+}

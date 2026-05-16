@@ -3,16 +3,28 @@
 use dioxus::prelude::*;
 use tokio::sync::mpsc;
 
-use crate::app_state::AppMode;
+use crate::app_state::{
+    ActiveWorkspacePath,
+    AppMode,
+    TocSyncTrigger,
+};
 use crate::ui::mode_switch::ModeSwitch;
 use crate::watcher::spawn_watcher;
 
-fn spawn_log_bridge(logger: Coroutine<String>) -> mpsc::UnboundedSender<String> {
+fn spawn_log_bridge(
+    logger: Coroutine<String>,
+    toc_trigger: TocSyncTrigger,
+) -> mpsc::UnboundedSender<String> {
     let (tx, mut rx) = mpsc::unbounded_channel::<String>();
+    let mut toc_trigger = toc_trigger.0;
 
     spawn(async move {
         while let Some(msg) = rx.recv().await {
-            logger.send(msg);
+            if msg == "[SYNC_TOC]" {
+                toc_trigger += 1;
+            } else {
+                logger.send(msg);
+            }
         }
     });
 
@@ -20,10 +32,10 @@ fn spawn_log_bridge(logger: Coroutine<String>) -> mpsc::UnboundedSender<String> 
 }
 
 pub fn ControlPanel() -> Element {
-    use crate::app_state::ActiveWorkspacePath;
-
     let mut active_path = use_context::<ActiveWorkspacePath>().0;
     let logger = use_context::<Coroutine<String>>();
+    let app_mode = use_context::<Signal<AppMode>>();
+    let toc_trigger = use_context::<TocSyncTrigger>();
 
     rsx! {
         div { class: "controls-container",
@@ -42,9 +54,7 @@ pub fn ControlPanel() -> Element {
                             active_path.set(path_str.clone());
                             logger.send(format!("[SYSTEM] Target acquired: {}", path_str));
 
-                            let tx = spawn_log_bridge(logger);
-
-                            let app_mode = use_context::<Signal<AppMode>>();
+                            let tx = spawn_log_bridge(logger, toc_trigger);
 
                             if let Err(e) = spawn_watcher(&folder_path, tx, app_mode.read().clone()) {
                                 logger.send(format!("[FATAL] Watcher fault: {}", e));

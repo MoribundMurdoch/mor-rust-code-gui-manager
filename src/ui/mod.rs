@@ -4,3 +4,6 @@ pub mod mode_switch;
 pub mod file_automation_dialog;
 pub mod node_file_manager;
 pub mod sidebar;
+pub mod toc_panel;
+pub mod editor;
+pub mod plugins;

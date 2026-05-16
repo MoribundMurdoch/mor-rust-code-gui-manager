@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use std::path::PathBuf;
 
-use crate::app_state::ActiveWorkspacePath;
+use crate::app_state::{ActiveEditorFile, ActiveWorkspacePath, AppMode};
 use crate::ui::file_automation_dialog::{FileAutomationDialog, FileAutomationTarget};
 use crate::wiki_lookup::{common_file_wiki_lookup, log_and_open_wiki};
 
@@ -35,6 +35,9 @@ fn navigate_to(
 pub fn NodeFileManager() -> Element {
     let active_path = use_context::<ActiveWorkspacePath>().0;
     let logger = use_context::<Coroutine<String>>();
+    let app_mode = use_context::<Signal<AppMode>>();
+    let mut active_editor = use_context::<ActiveEditorFile>().0;
+    let is_automate = app_mode.read().is_automate();
 
     let workspace_string = active_path.read().clone();
     let workspace_root = PathBuf::from(workspace_string.as_str());
@@ -47,6 +50,9 @@ pub fn NodeFileManager() -> Element {
     let mut context_menu = use_signal(|| None::<ManagerContextMenu>);
     let mut hovered_node = use_signal(|| None::<ManagerNode>);
     let mut automation_target = use_signal(|| None::<FileAutomationTarget>);
+    let mut creating_file_in = use_signal(|| None::<PathBuf>);
+    let mut deleting_node = use_signal(|| None::<(PathBuf, bool, String)>);
+    let mut new_filename = use_signal(|| String::new());
 
     // --- CAMERA PANNING & ZOOM STATE ---
     let mut pan_offset = use_signal(|| (0.0_f64, 0.0_f64));
@@ -571,6 +577,39 @@ pub fn NodeFileManager() -> Element {
                             },
                             "Open Terminal Here"
                         }
+
+                        button {
+                            class: "context-menu-item",
+                            onclick: {
+                                let path = menu.path.clone();
+
+                                move |_| {
+                                    creating_file_in.set(Some(path.clone()));
+                                    new_filename.set(String::new());
+                                    context_menu.set(None);
+                                }
+                            },
+                            "Create New File Here"
+                        }
+
+                        button {
+                            class: "context-menu-item danger-text",
+                            disabled: !is_automate,
+                            title: if !is_automate { "Requires Automate Mode" } else { "Delete this node" },
+                            onclick: {
+                                let path = menu.path.clone();
+                                let label = menu.label.clone();
+                                let is_dir = menu.is_dir;
+
+                                move |_| {
+                                    if is_automate {
+                                        deleting_node.set(Some((path.clone(), is_dir, label.clone())));
+                                        context_menu.set(None);
+                                    }
+                                }
+                            },
+                            "Delete"
+                        }
                     } else {
                         button {
                             class: "context-menu-item",
@@ -610,6 +649,20 @@ pub fn NodeFileManager() -> Element {
                             class: "context-menu-item",
                             onclick: {
                                 let path = menu.path.clone();
+
+                                move |_| {
+                                    active_editor.set(Some(path.clone()));
+                                    logger.send(format!("[EDITOR] Internal editor opened: {}", path.display()));
+                                    context_menu.set(None);
+                                }
+                            },
+                            "Open in Internal Editor"
+                        }
+
+                        button {
+                            class: "context-menu-item",
+                            onclick: {
+                                let path = menu.path.clone();
                                 let label = menu.label.clone();
 
                                 move |_| {
@@ -622,6 +675,25 @@ pub fn NodeFileManager() -> Element {
                                 }
                             },
                             "Automations..."
+                        }
+
+                        button {
+                            class: "context-menu-item danger-text",
+                            disabled: !is_automate,
+                            title: if !is_automate { "Requires Automate Mode" } else { "Delete this node" },
+                            onclick: {
+                                let path = menu.path.clone();
+                                let label = menu.label.clone();
+                                let is_dir = menu.is_dir;
+
+                                move |_| {
+                                    if is_automate {
+                                        deleting_node.set(Some((path.clone(), is_dir, label.clone())));
+                                        context_menu.set(None);
+                                    }
+                                }
+                            },
+                            "Delete"
                         }
 
                         if let Some(lookup) = common_file_wiki_lookup(&menu.path) {
@@ -654,6 +726,155 @@ pub fn NodeFileManager() -> Element {
                 FileAutomationDialog {
                     target,
                     onclose: move |_| automation_target.set(None),
+                }
+            }
+
+            // --- PHASE 5: In-Graph File Creation Overlay ---
+            if let Some(target_dir) = creating_file_in.read().clone() {
+                div {
+                    class: "nfm-creation-overlay",
+                    onclick: move |evt| evt.stop_propagation(),
+
+                    div {
+                        class: "nfm-creation-dialog",
+
+                        div {
+                            class: "nfm-creation-title",
+                            "Create New Rust Module"
+                        }
+
+                        div {
+                            class: "nfm-creation-path",
+                            "{target_dir.display()}/"
+                        }
+
+                        input {
+                            class: "nfm-creation-input",
+                            autofocus: true,
+                            placeholder: "e.g., my_module.rs",
+                            value: "{new_filename.read()}",
+                            oninput: move |evt| new_filename.set(evt.value()),
+                            onkeydown: move |evt| {
+                                match evt.key() {
+                                    dioxus::html::input_data::keyboard_types::Key::Enter => {
+                                        let name = new_filename.read().clone();
+
+                                        if !name.trim().is_empty() {
+                                            let safe_name = if name.ends_with(".rs") {
+                                                name
+                                            } else {
+                                                format!("{}.rs", name)
+                                            };
+
+                                            let full_path = target_dir.join(&safe_name);
+
+                                            match std::fs::write(&full_path, "") {
+                                                Ok(_) => {
+                                                    logger.send(format!(
+                                                        "[SYSTEM] Created empty file: {}",
+                                                        full_path.display()
+                                                    ));
+                                                }
+                                                Err(e) => {
+                                                    logger.send(format!(
+                                                        "[ERROR] Failed to create file: {}",
+                                                        e
+                                                    ));
+                                                }
+                                            }
+                                        }
+
+                                        creating_file_in.set(None);
+                                        new_filename.set(String::new());
+                                    }
+                                    dioxus::html::input_data::keyboard_types::Key::Escape => {
+                                        creating_file_in.set(None);
+                                        new_filename.set(String::new());
+                                    }
+                                    _ => {}
+                                }
+                            }
+                        }
+
+                        div {
+                            class: "nfm-creation-hint",
+                            "Press Enter to create, Escape to cancel."
+                        }
+                    }
+                }
+            }
+
+            // --- PHASE 5.5: Deletion Confirmation Overlay ---
+            if let Some((target_path, is_dir, target_label)) = deleting_node.read().clone() {
+                div {
+                    class: "nfm-creation-overlay",
+                    onclick: move |evt| evt.stop_propagation(),
+
+                    div {
+                        class: "nfm-creation-dialog nfm-danger-dialog",
+
+                        div {
+                            class: "nfm-creation-title danger-text",
+                            if is_dir {
+                                "Destroy Directory?"
+                            } else {
+                                "Destroy File?"
+                            }
+                        }
+
+                        div {
+                            class: "nfm-creation-path",
+                            "Target: {target_label}"
+                        }
+
+                        div {
+                            class: "nfm-danger-warning",
+                            "This action cannot be undone. Are you sure you want to permanently delete this from disk?"
+                        }
+
+                        div {
+                            class: "nfm-danger-actions",
+
+                            button {
+                                class: "safety-mode-btn danger active",
+                                autofocus: true,
+                                onclick: move |_| {
+                                    if is_dir {
+                                        match std::fs::remove_dir_all(&target_path) {
+                                            Ok(_) => logger.send(format!(
+                                                "[SYSTEM] Directory destroyed: {}",
+                                                target_path.display()
+                                            )),
+                                            Err(e) => logger.send(format!(
+                                                "[ERROR] Failed to destroy directory: {}",
+                                                e
+                                            )),
+                                        }
+                                    } else {
+                                        match std::fs::remove_file(&target_path) {
+                                            Ok(_) => logger.send(format!(
+                                                "[SYSTEM] File destroyed: {}",
+                                                target_path.display()
+                                            )),
+                                            Err(e) => logger.send(format!(
+                                                "[ERROR] Failed to destroy file: {}",
+                                                e
+                                            )),
+                                        }
+                                    }
+
+                                    deleting_node.set(None);
+                                },
+                                "Confirm Kill"
+                            }
+
+                            button {
+                                class: "safety-mode-btn",
+                                onclick: move |_| deleting_node.set(None),
+                                "Abort"
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -38,6 +38,7 @@
 
 /* Left/main canvas area */
 .graph-view-area {
+    position: relative;
     flex: 1 1 auto;
     min-width: 0;
     height: 100vh;
@@ -50,6 +51,7 @@
 
 /* Main graph/canvas area fills all remaining height */
 .graph-canvas-wrap {
+    position: relative;
     flex: 1 1 auto;
     min-height: 0;
     overflow: hidden;

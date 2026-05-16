@@ -143,3 +143,20 @@ pub fn log_and_open_wiki(
     }
 }
 
+pub fn search_rust_docs(query: &str, logger: &dioxus::prelude::Coroutine<String>) {
+    let url = format!("https://doc.rust-lang.org/std/?search={}", query);
+
+    match open_url(&url) {
+        Ok(_) => logger.send(format!("[WIKI] Searching std docs for: {}", query)),
+        Err(e) => logger.send(format!("[ERROR] Failed to open docs: {}", e)),
+    }
+}
+
+pub fn search_crates_io(query: &str, logger: &dioxus::prelude::Coroutine<String>) {
+    let url = format!("https://docs.rs/releases/search?query={}", query);
+
+    match open_url(&url) {
+        Ok(_) => logger.send(format!("[WIKI] Searching docs.rs for: {}", query)),
+        Err(e) => logger.send(format!("[ERROR] Failed to open docs: {}", e)),
+    }
+}

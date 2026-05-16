@@ -3,8 +3,15 @@
 
 use dioxus::prelude::*;
 
-use crate::app_state::{ActiveSidebarTab, SyncLogEntries};
+use crate::app_state::{
+    ActiveSidebarTab,
+    PluginFindReplaceOpen,
+    PluginNodeEditorOpen,
+    PluginWikiSearchOpen,
+    SyncLogEntries,
+};
 use crate::ui::controls::ControlPanel;
+use crate::ui::toc_panel::QuestLogPanel;
 
 fn toggle_tab(active_tab: &mut Signal<ActiveSidebarTab>, tab: ActiveSidebarTab) {
     if *active_tab.read() == tab {
@@ -17,6 +24,10 @@ fn toggle_tab(active_tab: &mut Signal<ActiveSidebarTab>, tab: ActiveSidebarTab) 
 pub fn RuneLiteSidebar() -> Element {
     let mut active_tab = use_context::<Signal<ActiveSidebarTab>>();
     let sync_logs = use_context::<SyncLogEntries>().0;
+
+    let mut find_replace_open = use_context::<PluginFindReplaceOpen>().0;
+    let mut wiki_open = use_context::<PluginWikiSearchOpen>().0;
+    let mut node_editor_open = use_context::<PluginNodeEditorOpen>().0;
 
     let current_tab = *active_tab.read();
 
@@ -34,28 +45,7 @@ pub fn RuneLiteSidebar() -> Element {
                         },
 
                         ActiveSidebarTab::QuestLog => rsx! {
-                            div {
-                                class: "quest-log-placeholder",
-
-                                h3 { "Layout Tips" }
-
-                                p {
-                                    "RuneLite-style interaction goal:"
-                                }
-
-                                ul {
-                                    li { "Hold Alt to move eligible widgets." }
-                                    li { "While holding Alt, click and drag a widget to reposition it." }
-                                    li { "Sidebar tabs open, close, and swap panels from the icon strip." }
-                                    li { "Inspect Mode is for safe read-only exploration." }
-                                    li { "Automate Mode is for approved preview/apply actions." }
-                                }
-
-                                p {
-                                    class: "sidebar-note",
-                                    "Alt-drag widget movement is a planned interaction pattern, not fully implemented yet."
-                                }
-                            }
+                            QuestLogPanel {}
                         },
 
                         ActiveSidebarTab::Automations => rsx! {
@@ -63,6 +53,119 @@ pub fn RuneLiteSidebar() -> Element {
                                 class: "automations-placeholder",
                                 h3 { "Global Automations" }
                                 p { "Workspace scripts go here." }
+                            }
+                        },
+
+                        ActiveSidebarTab::PluginHub => rsx! {
+                            div {
+                                class: "plugin-hub-container",
+
+                                h3 { "Plugin Hub" }
+
+                                div {
+                                    class: "runelite-plugin-item",
+
+                                    div {
+                                        class: "plugin-info",
+
+                                        div {
+                                            class: "plugin-title",
+                                            "Block Find/Replace"
+                                        }
+
+                                        div {
+                                            class: "plugin-desc",
+                                            "Oversized widget to swap multi-line AST chunks safely."
+                                        }
+                                    }
+
+                                    button {
+                                        class: if *find_replace_open.read() {
+                                            "plugin-toggle active"
+                                        } else {
+                                            "plugin-toggle"
+                                        },
+                                        onclick: move |_| {
+                                            let current = *find_replace_open.read();
+                                            find_replace_open.set(!current);
+                                        },
+                                        if *find_replace_open.read() {
+                                            "On"
+                                        } else {
+                                            "Off"
+                                        }
+                                    }
+                                }
+
+                                div {
+                                    class: "runelite-plugin-item",
+
+                                    div {
+                                        class: "plugin-info",
+
+                                        div {
+                                            class: "plugin-title",
+                                            "Rust Wiki Link"
+                                        }
+
+                                        div {
+                                            class: "plugin-desc",
+                                            "Floatable search bar for docs.rs and std lib."
+                                        }
+                                    }
+
+                                    button {
+                                        class: if *wiki_open.read() {
+                                            "plugin-toggle active"
+                                        } else {
+                                            "plugin-toggle"
+                                        },
+                                        onclick: move |_| {
+                                            let current = *wiki_open.read();
+                                            wiki_open.set(!current);
+                                        },
+                                        if *wiki_open.read() {
+                                            "On"
+                                        } else {
+                                            "Off"
+                                        }
+                                    }
+                                }
+
+                                div {
+                                    class: "runelite-plugin-item",
+
+                                    div {
+                                        class: "plugin-info",
+
+                                        div {
+                                            class: "plugin-title",
+                                            "Rust Node Editor"
+                                        }
+
+                                        div {
+                                            class: "plugin-desc",
+                                            "Visual programming interface for Rust AST generation."
+                                        }
+                                    }
+
+                                    button {
+                                        class: if *node_editor_open.read() {
+                                            "plugin-toggle active"
+                                        } else {
+                                            "plugin-toggle"
+                                        },
+                                        onclick: move |_| {
+                                            let current = *node_editor_open.read();
+                                            node_editor_open.set(!current);
+                                        },
+                                        if *node_editor_open.read() {
+                                            "On"
+                                        } else {
+                                            "Off"
+                                        }
+                                    }
+                                }
                             }
                         },
 
@@ -130,6 +233,19 @@ pub fn RuneLiteSidebar() -> Element {
                         toggle_tab(&mut active_tab, ActiveSidebarTab::Automations);
                     },
                     "⚡"
+                }
+
+                button {
+                    class: if current_tab == ActiveSidebarTab::PluginHub {
+                        "runelite-icon active"
+                    } else {
+                        "runelite-icon"
+                    },
+                    title: "Plugin Hub",
+                    onclick: move |_| {
+                        toggle_tab(&mut active_tab, ActiveSidebarTab::PluginHub);
+                    },
+                    "🧩"
                 }
 
                 button {

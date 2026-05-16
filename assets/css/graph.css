@@ -1,17 +1,21 @@
 /* assets/css/graph.css */
 
+/* --- Graph toolbar shell -------------------------------------------------- */
+
 .graph-toolbar {
+    position: relative;
+    z-index: 200;
     flex: 0 0 auto;
     display: flex;
     align-items: center;
     gap: 12px;
     padding: 8px 16px;
-    background:
-        linear-gradient(180deg, #252129 0%, #17151a 100%);
+    background: linear-gradient(180deg, #252129 0%, #17151a 100%);
     border-top: 1px solid var(--mor-border-mid);
     border-bottom: 1px solid var(--mor-border-dark);
     margin-bottom: 0;
     box-shadow: var(--mor-shadow-heavy);
+    overflow: visible;
 }
 
 .graph-toolbar .view-modes {
@@ -20,9 +24,17 @@
     border: 1px solid var(--mor-border-dark);
     padding: 3px;
     gap: 3px;
+    overflow: visible;
 }
 
+.graph-toolbar button {
+    font-family: inherit;
+}
+
+/* --- View mode buttons ---------------------------------------------------- */
+
 .graph-toolbar .mode-btn {
+    position: relative;
     background: transparent;
     color: var(--mor-text-muted);
     border: 1px solid transparent;
@@ -43,13 +55,83 @@
     border-color: var(--mor-border-mid);
 }
 
-/* Keeps compatibility with the current inline active style in the Rust component. */
+/*
+   Preferred active state.
+
+   In gui.rs, prefer:
+   class: if *view_mode.read() == "Hierarchy" { "mode-btn active" } else { "mode-btn" }
+
+   The compatibility selector below still supports the old inline style while
+   you are moving the Rust over.
+*/
+.graph-toolbar .mode-btn.active,
 .graph-toolbar .mode-btn[style*="background: #9d72ff"] {
     background: #4b351c !important;
     color: var(--mor-accent-bright) !important;
     border-color: var(--mor-accent) !important;
     box-shadow: var(--mor-shadow-glow);
 }
+
+/* --- Custom toolbar tooltips --------------------------------------------- */
+
+.graph-toolbar button[data-tooltip] {
+    position: relative;
+}
+
+.graph-toolbar button[data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 50%;
+    top: calc(100% + 9px);
+    z-index: 99999;
+    width: max-content;
+    max-width: 260px;
+    transform: translateX(-50%) translateY(-4px);
+    padding: 7px 10px;
+    background: var(--mor-bg-deep);
+    color: var(--mor-text);
+    border: 1px solid var(--mor-border-bright);
+    box-shadow: var(--mor-shadow-heavy);
+    font-size: 12px;
+    line-height: 1.35;
+    text-align: center;
+    white-space: normal;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+        opacity 0.12s ease,
+        transform 0.12s ease;
+}
+
+.graph-toolbar button[data-tooltip]::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: calc(100% + 4px);
+    z-index: 99999;
+    width: 8px;
+    height: 8px;
+    background: var(--mor-bg-deep);
+    border-left: 1px solid var(--mor-border-bright);
+    border-top: 1px solid var(--mor-border-bright);
+    transform: translateX(-50%) rotate(45deg);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.12s ease;
+}
+
+.graph-toolbar button[data-tooltip]:hover::after,
+.graph-toolbar button[data-tooltip]:focus-visible::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.graph-toolbar button[data-tooltip]:hover::before,
+.graph-toolbar button[data-tooltip]:focus-visible::before {
+    opacity: 1;
+}
+
+/* --- Hierarchy depth controls -------------------------------------------- */
 
 .graph-toolbar .depth-control {
     display: flex;
@@ -64,9 +146,7 @@
     width: 140px;
 }
 
-.graph-toolbar button {
-    font-family: inherit;
-}
+/* --- Non-mode toolbar buttons -------------------------------------------- */
 
 .graph-toolbar button:not(.mode-btn) {
     background: #1a1513;
@@ -81,7 +161,11 @@
     border-color: var(--mor-border-bright);
 }
 
+/* --- Node context menu ---------------------------------------------------- */
+
 .node-context-menu {
+    position: fixed;
+    z-index: 21000;
     min-width: 190px;
     padding: 4px;
     background: var(--mor-bg-deep);
@@ -117,4 +201,19 @@
 .node-context-menu .context-menu-item:disabled {
     color: var(--mor-text-dim);
     cursor: not-allowed;
+}
+
+/* --- General graph tooltip / overlay safety ------------------------------ */
+
+.nfm-context-peek,
+.nfm-tooltip,
+.node-tooltip,
+.graph-tooltip {
+    position: fixed;
+    z-index: 20000;
+    pointer-events: none;
+}
+
+.nfm-context-menu {
+    z-index: 21000;
 }
