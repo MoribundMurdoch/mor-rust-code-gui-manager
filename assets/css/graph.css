@@ -1,0 +1,119 @@
+/* assets/css/graph.css */
+
+.graph-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+    background:
+        linear-gradient(180deg, #252129 0%, #17151a 100%);
+    border-top: 1px solid var(--mor-border-mid);
+    border-bottom: 1px solid var(--mor-border-dark);
+    margin-bottom: 4px;
+    box-shadow: var(--mor-shadow-heavy);
+}
+
+.graph-toolbar .view-modes {
+    display: flex;
+    background: var(--mor-bg-deep);
+    border: 1px solid var(--mor-border-dark);
+    padding: 3px;
+    gap: 3px;
+}
+
+.graph-toolbar .mode-btn {
+    background: transparent;
+    color: var(--mor-text-muted);
+    border: 1px solid transparent;
+    padding: 6px 16px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.graph-toolbar .mode-btn:hover {
+    background: #2b2026;
+    color: var(--mor-text);
+    border-color: var(--mor-border-mid);
+}
+
+/* Keeps compatibility with the current inline active style in the Rust component. */
+.graph-toolbar .mode-btn[style*="background: #9d72ff"] {
+    background: #4b351c !important;
+    color: var(--mor-accent-bright) !important;
+    border-color: var(--mor-accent) !important;
+    box-shadow: var(--mor-shadow-glow);
+}
+
+.graph-toolbar .depth-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--mor-text-muted);
+    font-size: 13px;
+}
+
+.graph-toolbar input[type="range"] {
+    accent-color: var(--mor-accent);
+    width: 140px;
+}
+
+.graph-toolbar button {
+    font-family: inherit;
+}
+
+.graph-toolbar button:not(.mode-btn) {
+    background: #1a1513;
+    color: var(--mor-text);
+    border: 1px solid var(--mor-border-mid);
+    padding: 4px 12px;
+    cursor: pointer;
+}
+
+.graph-toolbar button:not(.mode-btn):hover {
+    background: #2a2018;
+    border-color: var(--mor-border-bright);
+}
+
+.node-context-menu {
+    min-width: 190px;
+    padding: 4px;
+    background: var(--mor-bg-deep);
+    border: 1px solid var(--mor-border-bright);
+    box-shadow: var(--mor-shadow-heavy);
+    font-family: var(--mor-font-ui);
+}
+
+.node-context-title {
+    color: var(--mor-accent-bright);
+    font-size: 12px;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--mor-border-mid);
+    margin-bottom: 4px;
+}
+
+.node-context-menu .context-menu-item {
+    display: block;
+    width: 100%;
+    background: transparent;
+    color: var(--mor-text);
+    border: none;
+    text-align: left;
+    padding: 7px 8px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.node-context-menu .context-menu-item:hover {
+    background: #2b2016;
+}
+
+.node-context-menu .context-menu-item:disabled {
+    color: var(--mor-text-dim);
+    cursor: not-allowed;
+}

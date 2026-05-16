@@ -1,0 +1,64 @@
+/* assets/css/controls.css */
+
+.safety-switch {
+    border: 1px solid var(--mor-border-mid);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent),
+        var(--mor-bg-deep);
+    padding: 10px;
+    margin-bottom: 16px;
+    color: var(--mor-text-muted);
+    box-shadow: inset 0 0 0 1px var(--mor-border-dark);
+}
+
+.safety-switch-title {
+    color: var(--mor-accent-bright);
+    margin-bottom: 8px;
+}
+
+.safety-switch-buttons {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.safety-mode-btn {
+    background: #151216;
+    color: var(--mor-text-muted);
+    border: 1px solid var(--mor-border-mid);
+    padding: 5px 10px;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow:
+        inset 1px 1px 0 rgba(232, 217, 184, 0.08),
+        inset -1px -1px 0 rgba(0, 0, 0, 0.65);
+}
+
+.safety-mode-btn:hover {
+    background: #211923;
+    color: var(--mor-text);
+    border-color: var(--mor-border-bright);
+}
+
+.safety-mode-btn.active {
+    background: #4b351c;
+    color: var(--mor-accent-bright);
+    border-color: var(--mor-accent);
+}
+
+.safety-mode-btn.danger.active {
+    background: var(--mor-danger);
+    color: #f0d0d4;
+    border-color: var(--mor-danger-border);
+}
+
+.safety-switch-label {
+    color: var(--mor-text);
+    margin-top: 6px;
+}
+
+.safety-switch-description {
+    font-size: 0.85em;
+    margin-top: 4px;
+    color: var(--mor-text-muted);
+}

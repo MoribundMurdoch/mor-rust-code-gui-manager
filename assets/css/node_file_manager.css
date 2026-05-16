@@ -1,0 +1,229 @@
+/* assets/css/node_file_manager.css */
+
+.node-file-manager-graph {
+    position: relative;
+    width: 100%;
+    min-height: 850px;
+    background:
+        radial-gradient(circle at 50% 10%, rgba(157, 114, 255, 0.08), transparent 34rem),
+        var(--mor-bg-panel);
+    color: var(--mor-text);
+    overflow: auto;
+}
+
+.node-file-manager-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.45rem 0.6rem;
+    background:
+        linear-gradient(180deg, #272229 0%, #17151a 100%);
+    border-top: 1px solid var(--mor-border-mid);
+    border-bottom: 1px solid var(--mor-border-dark);
+    box-shadow: var(--mor-shadow-heavy);
+}
+
+.node-file-manager-title {
+    font-weight: 700;
+    color: var(--mor-accent-bright);
+    padding-right: 0.5rem;
+    border-right: 1px solid var(--mor-border-mid);
+    margin-right: 0.25rem;
+}
+
+.nfm-nav-button,
+.nfm-crumb {
+    border: 1px solid var(--mor-border-mid);
+    background: #11100f;
+    color: var(--mor-text);
+    padding: 0.25rem 0.55rem;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow:
+        inset 1px 1px 0 rgba(232, 217, 184, 0.08),
+        inset -1px -1px 0 rgba(0, 0, 0, 0.7);
+}
+
+.nfm-nav-button:hover,
+.nfm-crumb:hover {
+    background: #251b12;
+    border-color: var(--mor-border-bright);
+}
+
+.nfm-nav-button:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+.nfm-breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    min-width: 0;
+    flex: 1;
+    overflow-x: auto;
+}
+
+.nfm-crumb.active {
+    background: #4b351c;
+    color: var(--mor-accent-bright);
+    border-color: var(--mor-accent);
+}
+
+.nfm-pathbar {
+    color: var(--mor-text-muted);
+    font-family: var(--mor-font-code);
+    padding: 0.65rem 0.85rem;
+    border-bottom: 1px solid var(--mor-border-dark);
+    background: rgba(0, 0, 0, 0.18);
+}
+
+.nfm-empty {
+    margin: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--mor-border-mid);
+    color: var(--mor-text-muted);
+    background: var(--mor-bg-deep);
+}
+
+.nfm-svg {
+    display: block;
+    background: transparent;
+}
+
+.nfm-node {
+    cursor: pointer;
+}
+
+.nfm-circle {
+    fill: #16130f;
+    stroke: var(--mor-accent);
+    stroke-width: 3;
+    filter: drop-shadow(0 0 6px rgba(183, 138, 58, 0.20));
+}
+
+.nfm-circle.current {
+    fill: #251b12;
+    stroke: var(--mor-accent-bright);
+    stroke-width: 4;
+}
+
+.nfm-circle.folder {
+    fill: #1b1712;
+}
+
+.nfm-circle.file {
+    fill: #0f0e0d;
+    stroke-width: 2.5;
+}
+
+.nfm-node-icon {
+    fill: var(--mor-accent-bright);
+    font-family: var(--mor-font-code);
+    font-size: 18px;
+    pointer-events: none;
+}
+
+.nfm-node-label {
+    fill: var(--mor-text);
+    font-family: var(--mor-font-ui);
+    font-size: 13px;
+    pointer-events: none;
+}
+
+.nfm-context-menu {
+    position: absolute;
+    z-index: 1000;
+    min-width: 210px;
+    background: var(--mor-bg-deep);
+    border: 1px solid var(--mor-border-bright);
+    box-shadow: var(--mor-shadow-heavy);
+    padding: 0.25rem;
+}
+
+.nfm-context-title {
+    color: var(--mor-accent-bright);
+    font-family: var(--mor-font-code);
+    font-size: 0.85rem;
+    padding: 0.45rem 0.55rem;
+    border-bottom: 1px solid var(--mor-border-mid);
+    margin-bottom: 0.25rem;
+}
+
+.nfm-context-menu .context-menu-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
+    color: var(--mor-text);
+    padding: 0.45rem 0.55rem;
+    cursor: pointer;
+}
+
+.nfm-context-menu .context-menu-item:hover {
+    background: #2b2016;
+}
+
+.nfm-context-peek {
+    position: absolute;
+    z-index: 900;
+    width: min(420px, 42vw);
+    max-height: 430px;
+    overflow: auto;
+    padding: 0.75rem;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent),
+        var(--mor-bg-deep);
+    border: 1px solid var(--mor-border-bright);
+    box-shadow: var(--mor-shadow-heavy);
+    color: var(--mor-text);
+    pointer-events: none;
+}
+
+.nfm-peek-title {
+    color: var(--mor-accent-bright);
+    font-weight: 700;
+    margin-bottom: 0.15rem;
+}
+
+.nfm-peek-path {
+    color: var(--mor-text-muted);
+    font-family: var(--mor-font-code);
+    font-size: 0.82rem;
+    margin-bottom: 0.5rem;
+}
+
+.nfm-peek-meta {
+    color: var(--mor-text-muted);
+    font-size: 0.84rem;
+    margin-bottom: 0.12rem;
+}
+
+.nfm-peek-section {
+    color: var(--mor-accent-bright);
+    font-weight: 700;
+    font-size: 0.84rem;
+    margin-top: 0.65rem;
+    margin-bottom: 0.2rem;
+    border-top: 1px solid var(--mor-border-mid);
+    padding-top: 0.45rem;
+}
+
+.nfm-peek-line,
+.nfm-peek-code {
+    color: var(--mor-text);
+    font-family: var(--mor-font-code);
+    font-size: 0.78rem;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.nfm-peek-code {
+    color: var(--mor-text-muted);
+}

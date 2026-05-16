@@ -41,6 +41,14 @@ impl AppMode {
     }
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ActiveSidebarTab {
+    None,
+    ControlPanel,
+    QuestLog,
+    Automations,
+}
+
 #[derive(Clone, Copy)]
 pub struct ActiveWorkspacePath(pub Signal<String>);
 

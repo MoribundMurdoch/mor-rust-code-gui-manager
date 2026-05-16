@@ -1,0 +1,94 @@
+/* assets/css/automation.css */
+
+.automation-dialog-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.76);
+}
+
+.automation-dialog {
+    width: min(900px, 92vw);
+    max-height: 86vh;
+    overflow: auto;
+    padding: 1.25rem;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent),
+        var(--mor-bg-panel);
+    border: 1px solid var(--mor-border-bright);
+    color: var(--mor-text);
+    box-shadow: var(--mor-shadow-heavy), var(--mor-shadow-glow);
+}
+
+.automation-dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.automation-dialog-close {
+    cursor: pointer;
+    color: var(--mor-accent-bright);
+}
+
+.automation-dialog-path,
+.automation-dialog-mode,
+.automation-dialog-subtitle {
+    color: var(--mor-text-muted);
+    font-size: 0.9rem;
+}
+
+.automation-section {
+    margin-top: 1.25rem;
+}
+
+.automation-form-row {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 0.65rem;
+}
+
+.automation-form-row label {
+    color: var(--mor-text-muted);
+    font-size: 0.9em;
+}
+
+.automation-form-row input,
+.automation-form-row select {
+    background: var(--mor-bg-deep);
+    color: var(--mor-text);
+    border: 1px solid var(--mor-border-mid);
+    padding: 0.4rem 0.5rem;
+    font-family: inherit;
+}
+
+.automation-form-row input:focus,
+.automation-form-row select:focus {
+    outline: 1px solid var(--mor-accent);
+    border-color: var(--mor-accent);
+}
+
+.automation-action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.automation-preview {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--mor-bg-deep);
+    border: 1px solid var(--mor-border-mid);
+    color: var(--mor-text-muted);
+    overflow: auto;
+    white-space: pre-wrap;
+    font-family: var(--mor-font-code);
+    font-size: 0.85em;
+}

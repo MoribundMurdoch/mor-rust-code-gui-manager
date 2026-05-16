@@ -1,0 +1,90 @@
+/* assets/css/runelite_sidebar.css */
+
+.runelite-sidebar-wrapper {
+    display: flex;
+    flex: 0 0 auto;
+    height: 100vh;
+    border-left: 2px solid var(--mor-border-dark);
+    background-color: var(--mor-bg-deep);
+    box-shadow: -8px 0 18px rgba(0, 0, 0, 0.45);
+}
+
+.runelite-panel {
+    width: 320px;
+    height: 100%;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 18rem),
+        var(--mor-bg-panel);
+    border-left: 1px solid var(--mor-border-mid);
+    border-right: 1px solid var(--mor-border-dark);
+    padding: 14px;
+    overflow-y: auto;
+    font-family: var(--mor-font-code);
+    color: var(--mor-text-muted);
+}
+
+.runelite-panel h3 {
+    color: var(--mor-accent-bright);
+    border-bottom: 1px solid var(--mor-border-mid);
+    padding-bottom: 0.35rem;
+    margin-top: 0;
+}
+
+.runelite-icon-strip {
+    width: 48px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background:
+        linear-gradient(90deg, #0b0a09 0%, #14110d 100%);
+    border-left: 1px solid var(--mor-border-mid);
+    padding-top: 8px;
+    gap: 8px;
+}
+
+.runelite-icon {
+    width: 36px;
+    height: 36px;
+    background:
+        linear-gradient(180deg, #1f1a14 0%, #0f0d0b 100%);
+    border: 1px solid var(--mor-border-mid);
+    color: var(--mor-text-muted);
+    font-size: 20px;
+    cursor: pointer;
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        box-shadow 0.2s ease;
+    box-shadow:
+        inset 1px 1px 0 rgba(232, 217, 184, 0.08),
+        inset -1px -1px 0 rgba(0, 0, 0, 0.75);
+}
+
+.runelite-icon:hover {
+    color: var(--mor-accent-bright);
+    background:
+        linear-gradient(180deg, #2a2116 0%, #15100c 100%);
+    border-color: var(--mor-border-bright);
+}
+
+.runelite-icon.active {
+    color: var(--mor-accent-bright);
+    background:
+        radial-gradient(circle at 50% 30%, rgba(215, 175, 95, 0.18), transparent 1.4rem),
+        linear-gradient(180deg, #4b351c 0%, #1a120b 100%);
+    border-color: var(--mor-accent);
+    box-shadow:
+        inset 1px 1px 0 rgba(232, 217, 184, 0.12),
+        inset -1px -1px 0 rgba(0, 0, 0, 0.75),
+        0 0 10px rgba(183, 138, 58, 0.28);
+}
+
+.quest-log-placeholder,
+.automations-placeholder {
+    border: 1px solid var(--mor-border-mid);
+    background: var(--mor-bg-deep);
+    padding: 0.85rem;
+    box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.35);
+}

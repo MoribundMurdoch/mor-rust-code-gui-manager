@@ -1,0 +1,78 @@
+/* assets/css/base.css */
+
+:root {
+    --mor-bg: #121214;
+    --mor-bg-deep: #080809;
+    --mor-bg-panel: #18161b;
+    --mor-bg-panel-raised: #211d25;
+
+    --mor-border-dark: #050506;
+    --mor-border-mid: #3a2f24;
+    --mor-border-bright: #6f5634;
+
+    --mor-text: #e8d9b8;
+    --mor-text-muted: #b9a47d;
+    --mor-text-dim: #7e715d;
+
+    --mor-accent: #b78a3a;
+    --mor-accent-bright: #d7af5f;
+    --mor-accent-purple: #9d72ff;
+    --mor-accent-purple-dark: #3c2a5d;
+
+    --mor-danger: #7a3344;
+    --mor-danger-border: #a35462;
+
+    --mor-shadow-heavy: 0 8px 24px rgba(0, 0, 0, 0.55);
+    --mor-shadow-glow: 0 0 18px rgba(183, 138, 58, 0.18);
+
+    --mor-font-ui: Georgia, "Times New Roman", serif;
+    --mor-font-code: "Cascadia Mono", "Fira Code", monospace;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    background:
+        radial-gradient(circle at 20% 0%, rgba(72, 47, 94, 0.18), transparent 34rem),
+        linear-gradient(180deg, #151319 0%, var(--mor-bg) 42%, var(--mor-bg-deep) 100%);
+    color: var(--mor-text);
+    font-family: var(--mor-font-ui);
+    margin: 0;
+    padding: 0;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button {
+    border-radius: 0;
+}
+
+h2,
+h3,
+h4 {
+    color: var(--mor-accent-bright);
+    font-weight: normal;
+    letter-spacing: 0.01em;
+}
+
+h2 {
+    border-bottom: 1px solid var(--mor-border-bright);
+    padding-bottom: 5px;
+}
+
+a {
+    color: var(--mor-accent-bright);
+}

@@ -1,0 +1,55 @@
+/* assets/css/layout.css */
+
+#mor-manager-layout {
+    display: flex;
+    height: 100vh;
+}
+
+#left-panel,
+#center-panel,
+#right-panel {
+    padding: 20px;
+    border-right: 1px solid var(--mor-border-dark);
+}
+
+#left-panel {
+    flex: 1;
+}
+
+#center-panel {
+    flex: 3;
+    background-color: var(--mor-bg-panel);
+}
+
+#right-panel {
+    flex: 1;
+    border-right: none;
+}
+
+.main-app-layout {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: var(--mor-bg-deep);
+}
+
+.graph-view-area {
+    flex: 1 1 auto;
+    min-width: 0;
+    position: relative;
+    overflow: hidden;
+    border-right: 1px solid var(--mor-border-dark);
+}
+
+.log-window {
+    background: var(--mor-bg-deep);
+    border: 1px solid var(--mor-border-mid);
+    padding: 10px;
+    height: 85%;
+    overflow-y: auto;
+    font-family: var(--mor-font-code);
+    font-size: 0.85em;
+    color: var(--mor-text-muted);
+    box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.45);
+}
